@@ -1,0 +1,185 @@
+@using CorporateWebsite.Web.Services
+@using CorporateWebsite.Core.DTOs
+@inject ISeoHelperService SeoHelper
+@inject ISchemaHelperService SchemaHelper
+@inject IBreadcrumbService BreadcrumbService
+@inject ILocalizationService LocalizationService
+@inject ISettingService SettingService
+
+@{
+    var culture = LocalizationService.CurrentCulture;
+    var isRtl = LocalizationService.IsRtl;
+    var direction = isRtl ? "rtl" : "ltr";
+    var lang = culture == "fa" ? "fa-IR" : culture == "en" ? "en-US" : "ar-SA";
+    
+    // Get SEO data
+    var seoData = SeoHelper.GetSeoData();
+    
+    // Generate schemas
+    var organizationSchema = SchemaHelper.GenerateOrganizationSchema();
+    var websiteSchema = SchemaHelper.GenerateWebSiteSchema();
+}
+
+<!DOCTYPE html>
+<html lang="@lang" dir="@direction" class="h-100">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    
+    @* SEO Meta Tags *@
+    @SeoHelper.RenderMetaTags()
+    @SeoHelper.RenderCanonicalLink()
+    
+    @* Hreflang Links *@
+    @{
+        var hreflangUrls = new Dictionary<string, string>
+        {
+            ["fa"] = LocalizationService.GetLocalizedUrl(Context.Request.Path, "fa"),
+            ["en"] = LocalizationService.GetLocalizedUrl(Context.Request.Path, "en"),
+            ["ar"] = LocalizationService.GetLocalizedUrl(Context.Request.Path, "ar")
+        };
+    }
+    @SeoHelper.RenderHreflangLinks(hreflangUrls)
+    
+    @* Favicon *@
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+    <link rel="apple-touch-icon" href="~/apple-touch-icon.png" />
+    <link rel="manifest" href="~/manifest.json" />
+    
+    @* Preconnect for performance *@
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    
+    @* Fonts *@
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" /></noscript>
+    
+    @* CSS *@
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="~/lib/aos/dist/aos.css" />
+    <link rel="stylesheet" href="~/lib/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    
+    @* Custom CSS from settings *@
+    @{
+        var customCss = await SettingService.GetValueAsync("CustomCss", "");
+        if (!string.IsNullOrEmpty(customCss))
+        {
+            <style>@Html.Raw(customCss)</style>
+        }
+    }
+    
+    @* JSON-LD Schemas *@
+    @SeoHelper.RenderJsonLd()
+    <script type="application/ld+json">@Html.Raw(organizationSchema)</script>
+    <script type="application/ld+json">@Html.Raw(websiteSchema)</script>
+    
+    @RenderSection("Head", required: false)
+</head>
+<body class="d-flex flex-column h-100 @direction">
+    @* Skip Link for Accessibility *@
+    <a href="#main-content" class="skip-link">@Localizer["Skip to main content"]</a>
+    
+    @* Cookie Consent Banner *@
+    <div id="cookie-consent" class="cookie-consent" role="dialog" aria-label="@Localizer["Cookie Consent"]" aria-describedby="cookie-description" hidden>
+        <div class="cookie-content">
+            <p id="cookie-description">@Localizer["We use cookies to improve your experience. By using our site, you agree to our cookie policy."]</p>
+            <div class="cookie-actions">
+                <button type="button" class="btn btn-primary" id="cookie-accept">@Localizer["Accept All"]</button>
+                <button type="button" class="btn btn-outline-secondary" id="cookie-decline">@Localizer["Decline"]</button>
+                <a href="@LocalizationService.GetLocalizedUrl("/cookie-policy", culture)" class="btn btn-link">@Localizer["Learn More"]</a>
+            </div>
+        </div>
+    </div>
+    
+    @* Header *@
+    @await Component.InvokeAsync("Header")
+    
+    @* Main Content *@
+    <main id="main-content" class="flex-grow-1" role="main">
+        @* Breadcrumb *@
+        @if (BreadcrumbService.GetBreadcrumbs().Any())
+        {
+            <nav class="breadcrumb-section" aria-label="@Localizer["Breadcrumb"]">
+                <div class="container">
+                    @BreadcrumbService.Render()
+                    @BreadcrumbService.RenderJsonLd()
+                </div>
+            </nav>
+        }
+        
+        @* Page Alerts *@
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show container mt-3" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="@Localizer["Close"]"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show container mt-3" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="@Localizer["Close"]"></button>
+            </div>
+        }
+        
+        @RenderBody()
+    </main>
+    
+    @* Footer *@
+    @await Component.InvokeAsync("Footer")
+    
+    @* Back to Top *@
+    <a href="#" class="back-to-top" id="backToTop" aria-label="@Localizer["Back to top"]" hidden>
+        <i class="fas fa-arrow-up"></i>
+    </a>
+    
+    @* JavaScript *@
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/aos/dist/aos.js"></script>
+    <script src="~/lib/swiper/swiper-bundle.min.js"></script>
+    <script src="~/js/main.js" asp-append-version="true"></script>
+    
+    @* Custom JS from settings *@
+    @{
+        var customHeadScripts = await SettingService.GetValueAsync("CustomHeadScripts", "");
+        if (!string.IsNullOrEmpty(customHeadScripts))
+        {
+            <script>@Html.Raw(customHeadScripts)</script>
+        }
+        
+        var customBodyScripts = await SettingService.GetValueAsync("CustomBodyScripts", "");
+        if (!string.IsNullOrEmpty(customBodyScripts))
+        {
+            <script>@Html.Raw(customBodyScripts)</script>
+        }
+    }
+    
+    @* Google Analytics / GTM *@
+    @{
+        var gaId = await SettingService.GetValueAsync("GoogleAnalyticsId", "");
+        if (!string.IsNullOrEmpty(gaId))
+        {
+            <script async src="https://www.googletagmanager.com/gtag/js?id=@gaId"></script>
+            <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '@gaId');
+            </script>
+        }
+        
+        var gtmId = await SettingService.GetValueAsync("GoogleTagManagerId", "");
+        if (!string.IsNullOrEmpty(gtmId))
+        {
+            <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','@gtmId');</script>
+        }
+    }
+    
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

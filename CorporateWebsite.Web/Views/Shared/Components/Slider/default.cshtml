@@ -1,0 +1,96 @@
+@model CorporateWebsite.Web.ViewComponents.Slider.SliderViewModel
+@inject IImageUrlService ImageUrlService
+
+@if (Model.Items.Any())
+{
+    var sliderId = $"slider-{Model.Slider?.Id ?? 0}";
+    var rtl = Model.IsRtl ? "rtl" : "";
+    
+    <section class="slider-section slider-@Model.Variant @rtl" aria-label="@(Model.Slider?.Translation?.Name ?? "Slider")">
+        <div id="@sliderId" class="carousel slide" data-bs-ride="carousel" data-bs-interval="@(Model.Slider?.AutoPlayInterval ?? 5000)" data-bs-pause="@(Model.Slider?.PauseOnHover == true ? "hover" : "false")" data-bs-rtl="@Model.IsRtl">
+            @if (Model.Slider?.ShowPagination == true)
+            {
+                <div class="carousel-indicators" role="tablist">
+                    @for (int i = 0; i < Model.Items.Count; i++)
+                    {
+                        <button type="button" data-bs-target="#@sliderId" data-bs-slide-to="@i" @(i == 0 ? "class=\"active\" aria-current=\"true\"" : "") aria-label="@($"{Localizer["Slide"]} {i + 1}")"></button>
+                    }
+                </div>
+            }
+
+            <div class="carousel-inner" role="listbox">
+                @for (int i = 0; i < Model.Items.Count; i++)
+                {
+                    var item = Model.Items[i];
+                    var translation = item.Translation;
+                    var isActive = i == 0;
+                    var alignment = item.ContentAlignment ?? "center";
+                    var position = item.ContentPosition ?? "middle";
+                    
+                    <div class="carousel-item @(isActive ? "active" : "")" role="option" aria-roledescription="slide" aria-label="@($"{Localizer["Slide"]} {i + 1}")">
+                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                        {
+                            <div class="slide-background" style="background-image: url('@ImageUrlService.GetImageUrl(item.ImageUrl, 1920, 1080)');">
+                                @if (!string.IsNullOrEmpty(item.OverlayColor) && item.OverlayOpacity > 0)
+                                {
+                                    <div class="slide-overlay" style="background-color: @item.OverlayColor; opacity: @item.OverlayOpacity;"></div>
+                                }
+                            </div>
+                        }
+                        else if (!string.IsNullOrEmpty(item.VideoUrl))
+                        {
+                            <div class="slide-video">
+                                <video class="slide-video-element" autoplay muted loop playsinline poster="@ImageUrlService.GetImageUrl(item.ImageUrl)">
+                                    <source src="@item.VideoUrl" type="video/mp4" />
+                                </video>
+                                @if (!string.IsNullOrEmpty(item.OverlayColor) && item.OverlayOpacity > 0)
+                                {
+                                    <div class="slide-overlay" style="background-color: @item.OverlayColor; opacity: @item.OverlayOpacity;"></div>
+                                }
+                            </div>
+                        }
+
+                        @if (translation != null && (!string.IsNullOrEmpty(translation.Title) || !string.IsNullOrEmpty(translation.Subtitle) || !string.IsNullOrEmpty(translation.Description)))
+                        {
+                            <div class="slide-content-container">
+                                <div class="container">
+                                    <div class="slide-content slide-align-@alignment slide-position-@position">
+                                        @if (!string.IsNullOrEmpty(translation.Subtitle))
+                                        {
+                                            <p class="slide-subtitle">@translation.Subtitle</p>
+                                        }
+                                        @if (!string.IsNullOrEmpty(translation.Title))
+                                        {
+                                            <h2 class="slide-title">@translation.Title</h2>
+                                        }
+                                        @if (!string.IsNullOrEmpty(translation.Description))
+                                        {
+                                            <p class="slide-description">@translation.Description</p>
+                                        }
+                                        @if (!string.IsNullOrEmpty(translation.ButtonText) && !string.IsNullOrEmpty(item.ButtonUrl))
+                                        {
+                                            var buttonUrl = item.ButtonUrl.StartsWith("http") ? item.ButtonUrl : $"/{Model.CurrentCulture}{item.ButtonUrl}";
+                                            <a href="@buttonUrl" target="@item.ButtonTarget" class="btn btn-@(item.ButtonStyle ?? "primary") btn-lg slide-button">
+                                                @translation.ButtonText
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            @if (Model.Slider?.ShowNavigation == true && Model.Items.Count > 1)
+            {
+                <button class="carousel-control-prev" type="button" data-bs-target="#@sliderId" data-bs-slide="prev" aria-label="@Localizer["Previous slide"]">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#@sliderId" data-bs-slide="next" aria-label="@Localizer["Next slide"]">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                </button>
+            }
+        </div>
+    </section>
+}

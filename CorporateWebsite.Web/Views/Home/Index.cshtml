@@ -1,0 +1,382 @@
+@model CorporateWebsite.Web.Controllers.HomeViewModel
+@inject ILocalizationService LocalizationService
+@inject IImageUrlService ImageUrlService
+@inject ISeoHelperService SeoHelper
+
+@{
+    ViewData["Title"] = Model.HomePage?.Translation?.Title ?? Localizer["Home"];
+}
+
+@* Hero Section *@
+@if (Model.HomePage != null)
+{
+    <section class="hero-section" aria-labelledby="hero-title">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 hero-content" data-aos="fade-right">
+                    @if (!string.IsNullOrEmpty(Model.HomePage.Translation?.ShortDescription))
+                    {
+                        <p class="hero-subtitle">@Model.HomePage.Translation.ShortDescription</p>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.HomePage.Translation?.Title))
+                    {
+                        <h1 id="hero-title" class="hero-title">@Model.HomePage.Translation.Title</h1>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.HomePage.Translation?.Content))
+                    {
+                        <div class="hero-description">@Html.Raw(Model.HomePage.Translation.Content)</div>
+                    }
+                    <div class="hero-actions mt-4">
+                        @if (Model.HomePage.Translation != null && !string.IsNullOrEmpty(Model.HomePage.Translation.MetaTitle))
+                        {
+                            <a href="@LocalizationService.GetLocalizedUrl("/contact", Model.CurrentCulture)" class="btn btn-primary btn-lg me-2">
+                                <i class="fas fa-arrow-right me-2"></i>@Localizer["Contact Us"]
+                            </a>
+                        }
+                        <a href="@LocalizationService.GetLocalizedUrl("/services", Model.CurrentCulture)" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-list me-2"></i>@Localizer["Our Services"]
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 hero-image" data-aos="fade-left">
+                    @if (!string.IsNullOrEmpty(Model.HomePage.Translation?.OgImage))
+                    {
+                        <img src="@ImageUrlService.GetImageUrl(Model.HomePage.Translation.OgImage, 800, 600)" alt="@Model.HomePage.Translation.Title" class="img-fluid hero-img" loading="eager" />
+                    }
+                    else if (Model.HeroBanners.Any())
+                    {
+                        var banner = Model.HeroBanners.First();
+                        @if (!string.IsNullOrEmpty(banner.ImageUrl))
+                        {
+                            <img src="@ImageUrlService.GetImageUrl(banner.ImageUrl, 800, 600)" alt="@banner.Translation?.Title ?? banner.Name" class="img-fluid hero-img" loading="eager" />
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+}
+else
+{
+    @* Slider *@
+    @await Component.InvokeAsync("Slider", "Homepage", "default")
+}
+
+@* Trusted By / Partners *@
+@if (Model.ContentBanners.Any(b => b.Location == "Partners"))
+{
+    <section class="partners-section py-5" aria-labelledby="partners-title">
+        <div class="container">
+            <div class="row">
+                @foreach (var banner in Model.ContentBanners.Where(b => b.Location == "Partners"))
+                {
+                    <div class="col-6 col-md-3 col-lg-2 mb-4" data-aos="fade-up">
+                        @if (!string.IsNullOrEmpty(banner.ImageUrl))
+                        {
+                            <a href="@banner.LinkUrl" target="@banner.LinkTarget" class="partner-logo d-block">
+                                <img src="@ImageUrlService.GetImageUrl(banner.ImageUrl, 200, 100)" alt="@banner.Translation?.AltText ?? banner.Name" class="img-fluid" loading="lazy" />
+                            </a>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+@* Services Section *@
+@if (Model.FeaturedServices.Any())
+{
+    <section class="services-section section-padding" aria-labelledby="services-title">
+        <div class="container">
+            <div class="section-header text-center mb-5" data-aos="fade-up">
+                <h2 id="services-title" class="section-title">@Localizer["Our Services"]</h2>
+                <p class="section-subtitle">@Localizer["Discover our professional services"]</p>
+            </div>
+            
+            <div class="row g-4">
+                @foreach (var service in Model.FeaturedServices)
+                {
+                    var translation = service.Translation;
+                    var imageUrl = service.ImageUrl;
+                    
+                    <div class="col-md-6 col-lg-4" data-aos="fade-up">
+                        <article class="service-card h-100">
+                            @if (!string.IsNullOrEmpty(imageUrl))
+                            {
+                                <div class="service-image">
+                                    <a href="@LocalizationService.GetLocalizedUrl($"/services/{translation?.Slug}", Model.CurrentCulture)">
+                                        <img src="@ImageUrlService.GetImageUrl(imageUrl, 400, 250)" alt="@translation?.Title" class="img-fluid" loading="lazy" />
+                                    </a>
+                                </div>
+                            }
+                            <div class="service-content">
+                                @if (!string.IsNullOrEmpty(translation?.Title))
+                                {
+                                    <h3 class="service-title">
+                                        <a href="@LocalizationService.GetLocalizedUrl($"/services/{translation?.Slug}", Model.CurrentCulture)">@translation.Title</a>
+                                    </h3>
+                                }
+                                @if (!string.IsNullOrEmpty(translation?.ShortDescription))
+                                {
+                                    <p class="service-description">@translation.ShortDescription</p>
+                                }
+                                <a href="@LocalizationService.GetLocalizedUrl($"/services/{translation?.Slug}", Model.CurrentCulture)" class="service-link">
+                                    @Localizer["Read More"] <i class="fas fa-arrow-left ms-1"></i>
+                                </a>
+                            </div>
+                        </article>
+                    </div>
+                }
+            </div>
+            
+            <div class="text-center mt-5" data-aos="fade-up">
+                <a href="@LocalizationService.GetLocalizedUrl("/services", Model.CurrentCulture)" class="btn btn-primary btn-lg">
+                    @Localizer["View All Services"] <i class="fas fa-arrow-left ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+}
+
+@* Projects Section *@
+@if (Model.FeaturedProjects.Any())
+{
+    <section class="projects-section section-padding bg-light" aria-labelledby="projects-title">
+        <div class="container">
+            <div class="section-header text-center mb-5" data-aos="fade-up">
+                <h2 id="projects-title" class="section-title">@Localizer["Our Projects"]</h2>
+                <p class="section-subtitle">@Localizer["Explore our latest projects"]</p>
+            </div>
+            
+            <div class="row g-4">
+                @foreach (var project in Model.FeaturedProjects)
+                {
+                    var translation = project.Translation;
+                    var imageUrl = project.MainImageUrl;
+                    
+                    <div class="col-md-6 col-lg-4" data-aos="fade-up">
+                        <article class="project-card h-100">
+                            @if (!string.IsNullOrEmpty(imageUrl))
+                            {
+                                <div class="project-image">
+                                    <a href="@LocalizationService.GetLocalizedUrl($"/projects/{translation?.Slug}", Model.CurrentCulture)">
+                                        <img src="@ImageUrlService.GetImageUrl(imageUrl, 400, 250)" alt="@translation?.Title" class="img-fluid" loading="lazy" />
+                                    </a>
+                                    @if (!string.IsNullOrEmpty(project.CategoryName))
+                                    {
+                                        <span class="project-category">@project.CategoryName</span>
+                                    }
+                                </div>
+                            }
+                            <div class="project-content">
+                                @if (!string.IsNullOrEmpty(translation?.Title))
+                                {
+                                    <h3 class="project-title">
+                                        <a href="@LocalizationService.GetLocalizedUrl($"/projects/{translation?.Slug}", Model.CurrentCulture)">@translation.Title</a>
+                                    </h3>
+                                }
+                                @if (!string.IsNullOrEmpty(translation?.ShortDescription))
+                                {
+                                    <p class="project-description">@translation.ShortDescription</p>
+                                }
+                                @if (!string.IsNullOrEmpty(project.ClientName))
+                                {
+                                    <p class="project-client"><i class="fas fa-user-tie me-1"></i> @project.ClientName</p>
+                                }
+                                <a href="@LocalizationService.GetLocalizedUrl($"/projects/{translation?.Slug}", Model.CurrentCulture)" class="project-link">
+                                    @Localizer["View Details"] <i class="fas fa-arrow-left ms-1"></i>
+                                </a>
+                            </div>
+                        </article>
+                    </div>
+                }
+            </div>
+            
+            <div class="text-center mt-5" data-aos="fade-up">
+                <a href="@LocalizationService.GetLocalizedUrl("/projects", Model.CurrentCulture)" class="btn btn-primary btn-lg">
+                    @Localizer["View All Projects"] <i class="fas fa-arrow-left ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+}
+
+@* Breaking News *@
+@if (Model.BreakingNews.Any())
+{
+    <section class="breaking-news-section section-padding" aria-labelledby="breaking-news-title">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-up">
+                <h2 id="breaking-news-title" class="section-title mb-0">
+                    <span class="breaking-badge">@Localizer["Breaking"]</span> @Localizer["Latest News"]
+                </h2>
+                <a href="@LocalizationService.GetLocalizedUrl("/news", Model.CurrentCulture)" class="btn btn-outline-primary">
+                    @Localizer["All News"] <i class="fas fa-arrow-left ms-1"></i>
+                </a>
+            </div>
+            
+            <div class="row g-4">
+                @foreach (var news in Model.BreakingNews)
+                {
+                    var translation = news.Translation;
+                    var imageUrl = news.MainImageUrl;
+                    
+                    <div class="col-md-6" data-aos="fade-up">
+                        <article class="news-card news-card-featured h-100">
+                            @if (!string.IsNullOrEmpty(imageUrl))
+                            {
+                                <div class="news-image">
+                                    <a href="@LocalizationService.GetLocalizedUrl($"/news/{translation?.Slug}", Model.CurrentCulture)">
+                                        <img src="@ImageUrlService.GetImageUrl(imageUrl, 600, 350)" alt="@translation?.Title" class="img-fluid" loading="lazy" />
+                                    </a>
+                                    <span class="news-category">@Localizer["Breaking"]</span>
+                                </div>
+                            }
+                            <div class="news-content">
+                                @if (!string.IsNullOrEmpty(news.CategoryName))
+                                {
+                                    <span class="news-tag">@news.CategoryName</span>
+                                }
+                                @if (!string.IsNullOrEmpty(translation?.Title))
+                                {
+                                    <h3 class="news-title">
+                                        <a href="@LocalizationService.GetLocalizedUrl($"/news/{translation?.Slug}", Model.CurrentCulture)">@translation.Title</a>
+                                    </h3>
+                                }
+                                @if (!string.IsNullOrEmpty(translation?.ShortDescription))
+                                {
+                                    <p class="news-excerpt">@translation.ShortDescription</p>
+                                }
+                                <div class="news-meta">
+                                    @if (news.PublishedAt.HasValue)
+                                    {
+                                        <time datetime="@news.PublishedAt.Value.ToString("yyyy-MM-dd")">@news.PublishedAt.Value.ToString("yyyy/MM/dd")</time>
+                                    }
+                                    @if (!string.IsNullOrEmpty(news.AuthorName))
+                                    {
+                                        <span class="news-author">@news.AuthorName</span>
+                                    }
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+@* Latest News *@
+@if (Model.LatestNews.Any())
+{
+    <section class="latest-news-section section-padding bg-light" aria-labelledby="latest-news-title">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-up">
+                <h2 id="latest-news-title" class="section-title mb-0">@Localizer["Latest Articles"]</h2>
+                <a href="@LocalizationService.GetLocalizedUrl("/news", Model.CurrentCulture)" class="btn btn-outline-primary">
+                    @Localizer["View All"] <i class="fas fa-arrow-left ms-1"></i>
+                </a>
+            </div>
+            
+            <div class="row g-4">
+                @foreach (var news in Model.LatestNews)
+                {
+                    var translation = news.Translation;
+                    var imageUrl = news.MainImageUrl;
+                    
+                    <div class="col-md-6 col-lg-4" data-aos="fade-up">
+                        <article class="news-card h-100">
+                            @if (!string.IsNullOrEmpty(imageUrl))
+                            {
+                                <div class="news-image">
+                                    <a href="@LocalizationService.GetLocalizedUrl($"/news/{translation?.Slug}", Model.CurrentCulture)">
+                                        <img src="@ImageUrlService.GetImageUrl(imageUrl, 400, 220)" alt="@translation?.Title" class="img-fluid" loading="lazy" />
+                                    </a>
+                                </div>
+                            }
+                            <div class="news-content">
+                                @if (!string.IsNullOrEmpty(news.CategoryName))
+                                {
+                                    <span class="news-tag">@news.CategoryName</span>
+                                }
+                                @if (!string.IsNullOrEmpty(translation?.Title))
+                                {
+                                    <h3 class="news-title">
+                                        <a href="@LocalizationService.GetLocalizedUrl($"/news/{translation?.Slug}", Model.CurrentCulture)">@translation.Title</a>
+                                    </h3>
+                                }
+                                @if (!string.IsNullOrEmpty(translation?.ShortDescription))
+                                {
+                                    <p class="news-excerpt">@translation.ShortDescription</p>
+                                }
+                                <div class="news-meta">
+                                    @if (news.PublishedAt.HasValue)
+                                    {
+                                        <time datetime="@news.PublishedAt.Value.ToString("yyyy-MM-dd")">@news.PublishedAt.Value.ToString("yyyy/MM/dd")</time>
+                                    }
+                                    @if (!string.IsNullOrEmpty(news.AuthorName))
+                                    {
+                                        <span class="news-author">@news.AuthorName</span>
+                                    }
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+@* CTA Section *@
+<section class="cta-section section-padding" aria-labelledby="cta-title">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center" data-aos="fade-up">
+                <h2 id="cta-title" class="cta-title">@Localizer["Ready to Start Your Project?"]</h2>
+                <p class="cta-text">@Localizer["Contact us today for a free consultation"]</p>
+                <div class="cta-actions mt-4">
+                    <a href="@LocalizationService.GetLocalizedUrl("/contact", Model.CurrentCulture)" class="btn btn-primary btn-lg me-2">
+                        <i class="fas fa-envelope me-2"></i>@Localizer["Get in Touch"]
+                    </a>
+                    <a href="@LocalizationService.GetLocalizedUrl("/services", Model.CurrentCulture)" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-briefcase me-2"></i>@Localizer["Our Services"]
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@* Stats Counter *@
+<section class="stats-section section-padding bg-primary text-white" aria-labelledby="stats-title">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 col-6 mb-4" data-aos="fade-up">
+                <div class="stat-item">
+                    <div class="stat-number" data-count="150">0</div>
+                    <div class="stat-label">@Localizer["Projects Completed"]</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-item">
+                    <div class="stat-number" data-count="50">0</div>
+                    <div class="stat-label">@Localizer["Happy Clients"]</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-item">
+                    <div class="stat-number" data-count="12">0</div>
+                    <div class="stat-label">@Localizer["Years Experience"]</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-item">
+                    <div class="stat-number" data-count="25">0</div>
+                    <div class="stat-label">@Localizer["Team Members"]</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,18 @@
+@model CorporateWebsite.Web.ViewComponents.LanguageSwitcher.LanguageSwitcherViewModel
+@inject ILocalizationService LocalizationService
+
+@if (Model.Languages.Count > 1)
+{
+    <div class="language-switcher language-switcher-inline" role="group" aria-label="@Localizer["Select Language"]">
+        @foreach (var lang in Model.Languages)
+        {
+            var isCurrent = lang.Code == Model.CurrentCulture;
+            var url = LocalizationService.GetLocalizedUrl(Context.Request.Path, lang.Code);
+            
+            <a href="@url" class="lang-btn @(isCurrent ? "active" : "")" @(isCurrent ? "aria-current=\"true\"" : "") role="button">
+                <span class="flag-icon">@lang.FlagIcon</span>
+                <span class="lang-code">@lang.Code.ToUpper()</span>
+            </a>
+        }
+    </div>
+}

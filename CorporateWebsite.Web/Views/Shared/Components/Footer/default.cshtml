@@ -1,0 +1,192 @@
+@model CorporateWebsite.Web.ViewComponents.Footer.FooterViewModel
+@inject ILocalizationService LocalizationService
+
+<footer class="site-footer footer-@Model.Variant" role="contentinfo">
+    <div class="footer-main">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                    <div class="footer-widget footer-about">
+                        @if (!string.IsNullOrEmpty(Model.Logo))
+                        {
+                            <a href="@LocalizationService.GetLocalizedUrl("/", Model.CurrentCulture)" class="footer-logo" aria-label="@Model.SiteName">
+                                <img src="@Model.Logo" alt="@Model.SiteName" height="50" loading="lazy" />
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="@LocalizationService.GetLocalizedUrl("/", Model.CurrentCulture)" class="footer-logo">
+                                <span class="logo-text">@Model.SiteName</span>
+                            </a>
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.Description))
+                        {
+                            <p class="footer-description">@Model.Description</p>
+                        }
+
+                        @if (Model.SocialLinks.Any())
+                        {
+                            <div class="social-links" role="list" aria-label="@Localizer["Social Media"]">
+                                @foreach (var link in Model.SocialLinks)
+                                {
+                                    <a href="@link.Url" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="@link.Name" style="--social-color: @link.Color;">
+                                        <i class="@link.Icon"></i>
+                                    </a>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
+                    <div class="footer-widget footer-links">
+                        <h4 class="footer-title">@Localizer["Quick Links"]</h4>
+                        <nav aria-label="@Localizer["Quick Links"]">
+                            <ul class="footer-menu">
+                                @foreach (var item in Model.FooterMenuItems.Where(m => m.ParentId == null).Take(8))
+                                {
+                                    var translation = item.Translation;
+                                    var title = translation?.Title ?? "";
+                                    var url = GetItemUrl(item, Model.CurrentCulture);
+                                    var target = item.Target ?? "_self";
+
+                                    <li>
+                                        <a href="@url" target="@target">@title</a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+                    <div class="footer-widget footer-contact">
+                        <h4 class="footer-title">@Localizer["Contact Us"]</h4>
+                        <address class="footer-address">
+                            @if (!string.IsNullOrEmpty(Model.Address))
+                            {
+                                <div class="contact-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>@Model.Address</span>
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.Phone))
+                            {
+                                <div class="contact-item">
+                                    <i class="fas fa-phone-alt"></i>
+                                    <a href="tel:@Model.Phone">@Model.Phone</a>
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.Email))
+                            {
+                                <div class="contact-item">
+                                    <i class="fas fa-envelope"></i>
+                                    <a href="mailto:@Model.Email">@Model.Email</a>
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.WorkingHours))
+                            {
+                                <div class="contact-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>@Model.WorkingHours</span>
+                                </div>
+                            }
+                        </address>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-widget footer-newsletter">
+                        <h4 class="footer-title">@Localizer["Newsletter"]</h4>
+                        <p class="newsletter-text">@Localizer["Subscribe to our newsletter for latest updates"]</p>
+                        <form class="newsletter-form" action="@LocalizationService.GetLocalizedUrl("/newsletter/subscribe", Model.CurrentCulture)" method="post" role="form">
+                            <div class="input-group">
+                                <input type="email" name="email" class="form-control" placeholder="@Localizer["Enter your email"]" required aria-label="@Localizer["Email address"]" />
+                                <button type="submit" class="btn btn-primary" aria-label="@Localizer["Subscribe"]">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                            <small class="form-text text-muted">@Localizer["We respect your privacy. No spam, ever."]</small>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="copyright mb-0">
+                        &copy; @Model.CurrentYear @Model.CompanyName. @Localizer["All rights reserved."]
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <nav aria-label="@Localizer["Legal Links"]">
+                        <ul class="footer-legal-links list-unstyled d-flex flex-wrap justify-content-md-end gap-3 mb-0">
+                            <li>
+                                <a href="@LocalizationService.GetLocalizedUrl("/privacy-policy", Model.CurrentCulture)">@Localizer["Privacy Policy"]</a>
+                            </li>
+                            <li>
+                                <a href="@LocalizationService.GetLocalizedUrl("/terms-of-service", Model.CurrentCulture)">@Localizer["Terms of Service"]</a>
+                            </li>
+                            <li>
+                                <a href="@LocalizationService.GetLocalizedUrl("/cookies-policy", Model.CurrentCulture)">@Localizer["Cookie Policy"]</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+@functions {
+    string GetItemUrl(MenuItemDto item, string culture)
+    {
+        if (!string.IsNullOrEmpty(item.CustomUrl))
+        {
+            return item.CustomUrl.StartsWith("http") ? item.CustomUrl : $"/{culture}{item.CustomUrl}";
+        }
+
+        if (item.PageId.HasValue && item.Page != null)
+        {
+            var translation = item.Page.Translation;
+            if (translation != null)
+            {
+                return $"/{culture}/{translation.Slug}";
+            }
+        }
+
+        if (item.ServiceId.HasValue && item.Service != null)
+        {
+            var translation = item.Service.Translation;
+            if (translation != null)
+            {
+                return $"/{culture}/services/{translation.Slug}";
+            }
+        }
+
+        if (item.ProjectId.HasValue && item.Project != null)
+        {
+            var translation = item.Project.Translation;
+            if (translation != null)
+            {
+                return $"/{culture}/projects/{translation.Slug}";
+            }
+        }
+
+        if (item.NewsCategoryId.HasValue && item.NewsCategory != null)
+        {
+            var translation = item.NewsCategory.Translation;
+            if (translation != null)
+            {
+                return $"/{culture}/news/category/{translation.Slug}";
+            }
+        }
+
+        return "#";
+    }
+}

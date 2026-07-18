@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: corporatewebsite
+    runtime: docker
+    repo: https://github.com/alinamvarkallan1390-source/CorporateWebsite
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    region: frankfurt
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: Database__Provider
+        value: InMemory

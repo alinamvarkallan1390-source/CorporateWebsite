@@ -1,0 +1,194 @@
+@model CorporateWebsite.Web.ViewComponents.Header.HeaderViewModel
+@inject ILocalizationService LocalizationService
+
+<header class="site-header header-@Model.Variant" role="banner">
+    <div class="top-bar d-none d-lg-block">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="contact-info">
+                        @if (!string.IsNullOrEmpty(Model.Phone))
+                        {
+                            <a href="tel:@Model.Phone" class="contact-item">
+                                <i class="fas fa-phone-alt"></i>
+                                <span>@Model.Phone</span>
+                            </a>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Email))
+                        {
+                            <a href="mailto:@Model.Email" class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <span>@Model.Email</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="header-actions">
+                        @await Component.InvokeAsync("LanguageSwitcher")
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <a href="@LocalizationService.GetLocalizedUrl("/account", Model.CurrentCulture)" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-user"></i> @Localizer["Dashboard"]
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="@LocalizationService.GetLocalizedUrl("/login", Model.CurrentCulture)" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-sign-in-alt"></i> @Localizer["Login"]
+                            </a>
+                            <a href="@LocalizationService.GetLocalizedUrl("/register", Model.CurrentCulture)" class="btn btn-sm btn-primary ms-2">
+                                <i class="fas fa-user-plus"></i> @Localizer["Register"]
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="main-navigation navbar navbar-expand-lg" role="navigation" aria-label="@Localizer["Main Navigation"]">
+        <div class="container">
+            <a class="navbar-brand" href="@LocalizationService.GetLocalizedUrl("/", Model.CurrentCulture)" aria-label="@Model.SiteName - @Localizer["Home"]">
+                @if (!string.IsNullOrEmpty(Model.Logo))
+                {
+                    <img src="@Model.Logo" alt="@Model.SiteName" class="logo-img" height="50" loading="lazy" />
+                }
+                else
+                {
+                    <span class="logo-text">@Model.SiteName</span>
+                }
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="@Localizer["Toggle navigation"]">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNav">
+                @if (Model.MenuItems.Any())
+                {
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0" role="menubar">
+                        @foreach (var item in Model.MenuItems)
+                        {
+                            @await RenderMenuItem(item, Model.CurrentCulture)
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </nav>
+</header>
+
+@functions {
+    async Task RenderMenuItem(MenuItemDto item, string culture)
+    {
+        var translation = item.Translation;
+        var title = translation?.Title ?? "";
+        var url = GetItemUrl(item, culture);
+        var hasChildren = item.Children?.Any() == true;
+        var target = item.Target ?? "_self";
+
+        <li class="nav-item @(hasChildren ? "dropdown" : "")" role="@(hasChildren ? "none" : "menuitem")">
+            @if (hasChildren)
+            {
+                <a class="nav-link dropdown-toggle" href="@url" role="button" data-bs-toggle="dropdown" aria-expanded="false" target="@target">
+                    @title
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                    @foreach (var child in item.Children!)
+                    {
+                        var childTranslation = child.Translation;
+                        var childTitle = childTranslation?.Title ?? "";
+                        var childUrl = GetItemUrl(child, culture);
+                        var childTarget = child.Target ?? "_self";
+                        var childHasChildren = child.Children?.Any() == true;
+
+                        if (childHasChildren)
+                        {
+                            <li class="dropdown-submenu" role="none">
+                                <a class="dropdown-item dropdown-toggle" href="@childUrl" role="button" data-bs-toggle="dropdown" aria-expanded="false" target="@childTarget">
+                                    @childTitle
+                                </a>
+                                <ul class="dropdown-menu" role="menu">
+                                    @foreach (var subChild in child.Children!)
+                                    {
+                                        var subTranslation = subChild.Translation;
+                                        var subTitle = subTranslation?.Title ?? "";
+                                        var subUrl = GetItemUrl(subChild, culture);
+                                        var subTarget = subChild.Target ?? "_self";
+
+                                        <li role="none">
+                                            <a class="dropdown-item" href="@subUrl" target="@subTarget" role="menuitem">
+                                                @subTitle
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li role="none">
+                                <a class="dropdown-item" href="@childUrl" target="@childTarget" role="menuitem">
+                                    @childTitle
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+            }
+            else
+            {
+                <a class="nav-link" href="@url" target="@target" role="menuitem">
+                    @title
+                </a>
+            }
+        </li>
+    }
+
+    string GetItemUrl(MenuItemDto item, string culture)
+    {
+        if (!string.IsNullOrEmpty(item.CustomUrl))
+        {
+            return item.CustomUrl.StartsWith("http") ? item.CustomUrl : $"/{culture}{item.CustomUrl}";
+        }
+
+        if (item.PageId.HasValue && item.Page != null)
+        {
+            var translation = item.Page.Translation;
+            if (translation != null)
+            {
+                return $"/{culture}/{translation.Slug}";
+            }
+        }
+
+        if (item.ServiceId.HasValue && item.Service != null)
+        {
+            var translation = item.Service.Translation;
+            if (translation != null)
+            {
+                return $"/{culture}/services/{translation.Slug}";
+            }
+        }
+
+        if (item.ProjectId.HasValue && item.Project != null)
+        {
+            var translation = item.Project.Translation;
+            if (translation != null)
+            {
+                return $"/{culture}/projects/{translation.Slug}";
+            }
+        }
+
+        if (item.NewsCategoryId.HasValue && item.NewsCategory != null)
+        {
+            var translation = item.NewsCategory.Translation;
+            if (translation != null)
+            {
+                return $"/{culture}/news/category/{translation.Slug}";
+            }
+        }
+
+        return "#";
+    }
+}
