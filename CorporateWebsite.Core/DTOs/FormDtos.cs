@@ -25,11 +25,8 @@ public class FormDto
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     
-    // Translations
     public FormTranslationDto? Translation { get; set; }
     public ICollection<FormTranslationDto> Translations { get; set; } = new List<FormTranslationDto>();
-    
-    // Fields
     public ICollection<FormFieldDto> Fields { get; set; } = new List<FormFieldDto>();
 }
 
@@ -140,7 +137,6 @@ public class FormFieldDto
     public bool IsVisible { get; set; }
     public string? ConditionalLogic { get; set; }
     
-    // Translations
     public FormFieldTranslationDto? Translation { get; set; }
     public ICollection<FormFieldTranslationDto> Translations { get; set; } = new List<FormFieldTranslationDto>();
 }
@@ -242,10 +238,7 @@ public class FormSubmissionDto
     public DateTime? ProcessedAt { get; set; }
     public string? ProcessedBy { get; set; }
     
-    // Field Values
     public ICollection<FormFieldValueDto> FieldValues { get; set; } = new List<FormFieldValueDto>();
-    
-    // Files
     public ICollection<FormSubmissionFileDto> Files { get; set; } = new List<FormSubmissionFileDto>();
 }
 
@@ -271,14 +264,7 @@ public class FormSubmissionFileDto
     public long FileSize { get; set; }
 }
 
-public class SubmitFormDto
-{
-    public int FormId { get; set; }
-    public Dictionary<string, string> FieldValues { get; set; } = new Dictionary<string, string>();
-    public Dictionary<int, List<IFormFile>>? Files { get; set; }
-    public string? RecaptchaToken { get; set; }
-}
-
+// SubmitFormDto moved to Application layer - uses IFormFile
 public class FormSubmissionFilterDto
 {
     public int? FormId { get; set; }

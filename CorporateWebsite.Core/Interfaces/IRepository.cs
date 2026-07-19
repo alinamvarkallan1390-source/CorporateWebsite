@@ -77,8 +77,6 @@ public interface IUnitOfWork : IDisposable
     IRepository<EmailTemplateTranslation> EmailTemplateTranslations { get; }
     IRepository<EmailQueue> EmailQueue { get; }
     IRepository<Backup> Backups { get; }
-    IRepository<ApplicationUser> Users { get; }
-    IRepository<ApplicationRole> Roles { get; }
     IRepository<RolePermission> RolePermissions { get; }
     
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

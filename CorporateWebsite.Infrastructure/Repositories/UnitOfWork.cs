@@ -11,7 +11,6 @@ public class UnitOfWork : IUnitOfWork
     private IDbContextTransaction? _transaction;
     private bool _disposed = false;
 
-    // Repositories
     private IRepository<Language>? _languages;
     private IRepository<Page>? _pages;
     private IRepository<PageTranslation>? _pageTranslations;
@@ -61,8 +60,6 @@ public class UnitOfWork : IUnitOfWork
     private IRepository<EmailTemplateTranslation>? _emailTemplateTranslations;
     private IRepository<EmailQueue>? _emailQueue;
     private IRepository<Backup>? _backups;
-    private IRepository<ApplicationUser>? _users;
-    private IRepository<ApplicationRole>? _roles;
     private IRepository<RolePermission>? _rolePermissions;
 
     public UnitOfWork(ApplicationDbContext context)
@@ -119,8 +116,6 @@ public class UnitOfWork : IUnitOfWork
     public IRepository<EmailTemplateTranslation> EmailTemplateTranslations => _emailTemplateTranslations ??= new Repository<EmailTemplateTranslation>(_context);
     public IRepository<EmailQueue> EmailQueue => _emailQueue ??= new Repository<EmailQueue>(_context);
     public IRepository<Backup> Backups => _backups ??= new Repository<Backup>(_context);
-    public IRepository<ApplicationUser> Users => _users ??= new Repository<ApplicationUser>(_context);
-    public IRepository<ApplicationRole> Roles => _roles ??= new Repository<ApplicationRole>(_context);
     public IRepository<RolePermission> RolePermissions => _rolePermissions ??= new Repository<RolePermission>(_context);
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
