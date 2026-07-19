@@ -29,8 +29,7 @@ x86/
 # Visual Studio
 .vs/
 *.sln.docstates
-*.vc.db
-*.sln
+*.sln.iml
 
 # VS Code
 .vscode/*
