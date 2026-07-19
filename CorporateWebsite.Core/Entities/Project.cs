@@ -18,12 +18,10 @@ public class Project : BaseEntity
     public bool IsFeatured { get; set; }
     public int ViewCount { get; set; } = 0;
     
-    // SEO
     public string? CanonicalUrl { get; set; }
     public bool NoIndex { get; set; }
     public bool NoFollow { get; set; }
     
-    // Navigation
     public ProjectCategory? Category { get; set; }
     public ICollection<ProjectTranslation> Translations { get; set; } = new List<ProjectTranslation>();
     public ICollection<ProjectImage> Images { get; set; } = new List<ProjectImage>();
@@ -49,21 +47,19 @@ public class ProjectTranslation : BaseEntity
     public string? OgImage { get; set; }
     public string? SchemaJson { get; set; }
     
-    // Navigation
     public Project Project { get; set; } = null!;
     public Language Language { get; set; } = null!;
 }
 
 public class ProjectCategory : BaseEntity
 {
-    public string Slug { get; set; } = string.Empty.
+    public string Slug { get; set; } = string.Empty;
     public int? ParentId { get; set; }
     public int DisplayOrder { get; set; }
     public string? Icon { get; set; }
     public string? ImageUrl { get; set; }
     public bool IsActive { get; set; } = true;
     
-    // Navigation
     public ProjectCategory? Parent { get; set; }
     public ICollection<ProjectCategory> Children { get; set; } = new List<ProjectCategory>();
     public ICollection<ProjectCategoryTranslation> Translations { get; set; } = new List<ProjectCategoryTranslation>();
@@ -79,7 +75,6 @@ public class ProjectCategoryTranslation : BaseEntity
     public string? MetaTitle { get; set; }
     public string? MetaDescription { get; set; }
     
-    // Navigation
     public ProjectCategory Category { get; set; } = null!;
     public Language Language { get; set; } = null!;
 }
@@ -93,7 +88,6 @@ public class ProjectImage : BaseEntity
     public int DisplayOrder { get; set; }
     public bool IsMain { get; set; }
     
-    // Navigation
     public Project Project { get; set; } = null!;
 }
 
@@ -105,7 +99,6 @@ public class ProjectVideo : BaseEntity
     public string? ThumbnailUrl { get; set; }
     public int DisplayOrder { get; set; }
     
-    // Navigation
     public Project Project { get; set; } = null!;
 }
 
@@ -118,7 +111,6 @@ public class ProjectFile : BaseEntity
     public long? FileSize { get; set; }
     public int DisplayOrder { get; set; }
     
-    // Navigation
     public Project Project { get; set; } = null!;
 }
 
@@ -127,7 +119,6 @@ public class Tag : BaseEntity
     public string Slug { get; set; } = string.Empty;
     public int UsageCount { get; set; } = 0;
     
-    // Navigation
     public ICollection<TagTranslation> Translations { get; set; } = new List<TagTranslation>();
     public ICollection<ProjectTag> ProjectTags { get; set; } = new List<ProjectTag>();
     public ICollection<NewsTag> NewsTags { get; set; } = new List<NewsTag>();
@@ -139,7 +130,6 @@ public class TagTranslation : BaseEntity
     public int LanguageId { get; set; }
     public string Name { get; set; } = string.Empty;
     
-    // Navigation
     public Tag Tag { get; set; } = null!;
     public Language Language { get; set; } = null!;
 }
@@ -149,7 +139,6 @@ public class ProjectTag : BaseEntity
     public int ProjectId { get; set; }
     public int TagId { get; set; }
     
-    // Navigation
     public Project Project { get; set; } = null!;
     public Tag Tag { get; set; } = null!;
 }
@@ -160,7 +149,6 @@ public class ProjectFeature : BaseEntity
     public int DisplayOrder { get; set; }
     public string? Icon { get; set; }
     
-    // Navigation
     public Project Project { get; set; } = null!;
     public ICollection<ProjectFeatureTranslation> Translations { get; set; } = new List<ProjectFeatureTranslation>();
 }
@@ -172,7 +160,6 @@ public class ProjectFeatureTranslation : BaseEntity
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
     
-    // Navigation
     public ProjectFeature Feature { get; set; } = null!;
     public Language Language { get; set; } = null!;
 }
@@ -185,7 +172,6 @@ public class ProjectTeamMember : BaseEntity
     public string? ImageUrl { get; set; }
     public string? LinkedInUrl { get; set; }
     
-    // Navigation
     public Project Project { get; set; } = null!;
     public ICollection<ProjectTeamMemberTranslation> Translations { get; set; } = new List<ProjectTeamMemberTranslation>();
 }
@@ -197,7 +183,6 @@ public class ProjectTeamMemberTranslation : BaseEntity
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
     
-    // Navigation
     public ProjectTeamMember TeamMember { get; set; } = null!;
     public Language Language { get; set; } = null!;
 }

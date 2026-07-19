@@ -4,18 +4,17 @@ public class Slider : BaseEntity
 {
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
-    public string Location { get; set; } = "Homepage"; // Homepage, ServicePage, ProjectPage, etc.
+    public string Location { get; set; } = "Homepage";
     public int DisplayOrder { get; set; }
-    public bool IsActive { get; set; } = true.
+    public bool IsActive { get; set; } = true;
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
-    public string? TransitionEffect { get; set; } // fade, slide, zoom, etc.
-    public int? AutoPlayInterval { get; set; } // milliseconds
-    public bool ShowNavigation { get; set; } = true.
-    public bool ShowPagination { get; set; } = true.
-    public bool PauseOnHover { get; set; } = true.
+    public string? TransitionEffect { get; set; }
+    public int? AutoPlayInterval { get; set; }
+    public bool ShowNavigation { get; set; } = true;
+    public bool ShowPagination { get; set; } = true;
+    public bool PauseOnHover { get; set; } = true;
     
-    // Navigation
     public ICollection<SliderTranslation> Translations { get; set; } = new List<SliderTranslation>();
     public ICollection<SliderItem> Items { get; set; } = new List<SliderItem>();
 }
@@ -24,10 +23,9 @@ public class SliderTranslation : BaseEntity
 {
     public int SliderId { get; set; }
     public int LanguageId { get; set; }
-    public string Name { get; set; } = string.Empty.
+    public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
     
-    // Navigation
     public Slider Slider { get; set; } = null!;
     public Language Language { get; set; } = null!;
 }
@@ -40,15 +38,14 @@ public class SliderItem : BaseEntity
     public string? ButtonText { get; set; }
     public string? ButtonUrl { get; set; }
     public string? ButtonTarget { get; set; } = "_self";
-    public string? ButtonStyle { get; set; } // primary, secondary, outline
+    public string? ButtonStyle { get; set; }
     public int DisplayOrder { get; set; }
-    public bool IsActive { get; set; } = true.
-    public string? ContentAlignment { get; set; } // left, center, right
-    public string? ContentPosition { get; set; } // top, middle, bottom
+    public bool IsActive { get; set; } = true;
+    public string? ContentAlignment { get; set; }
+    public string? ContentPosition { get; set; }
     public string? OverlayColor { get; set; }
     public double? OverlayOpacity { get; set; }
     
-    // Navigation
     public Slider Slider { get; set; } = null!;
     public ICollection<SliderItemTranslation> Translations { get; set; } = new List<SliderItemTranslation>();
 }
@@ -63,28 +60,26 @@ public class SliderItemTranslation : BaseEntity
     public string? ButtonText { get; set; }
     public string? AltText { get; set; }
     
-    // Navigation
     public SliderItem SliderItem { get; set; } = null!;
     public Language Language { get; set; } = null!;
 }
 
 public class Banner : BaseEntity
 {
-    public string Name { get; set; } = string.Empty.
+    public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
-    public string Location { get; set; } = string.Empty; // Header, Sidebar, Footer, BetweenContent, Popup
+    public string Location { get; set; } = string.Empty;
     public string? ImageUrl { get; set; }
     public string? VideoUrl { get; set; }
     public string? LinkUrl { get; set; }
-    public string? LinkTarget { get; set; } = "_self".
+    public string? LinkTarget { get; set; } = "_self";
     public int DisplayOrder { get; set; }
-    public bool IsActive { get; set; } = true.
+    public bool IsActive { get; set; } = true;
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public string? CssClass { get; set; }
     public string? CustomHtml { get; set; }
     
-    // Navigation
     public ICollection<BannerTranslation> Translations { get; set; } = new List<BannerTranslation>();
 }
 
@@ -98,7 +93,6 @@ public class BannerTranslation : BaseEntity
     public string? ButtonText { get; set; }
     public string? CustomHtml { get; set; }
     
-    // Navigation
     public Banner Banner { get; set; } = null!;
     public Language Language { get; set; } = null!;
 }

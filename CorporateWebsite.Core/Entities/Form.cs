@@ -8,21 +8,20 @@ public class Form : BaseEntity
     public int? PageId { get; set; }
     public bool IsActive { get; set; } = true;
     public bool AllowMultipleSubmissions { get; set; } = false;
-    public bool RequireCaptcha { get; set; } = true.
-    public int? RateLimitCount { get; set; } // per IP per hour
-    public int? RateLimitWindowMinutes { get; set; } = 60.
+    public bool RequireCaptcha { get; set; } = true;
+    public int? RateLimitCount { get; set; }
+    public int? RateLimitWindowMinutes { get; set; } = 60;
     public string? SubmitButtonText { get; set; }
     public string? SuccessMessage { get; set; }
     public string? ErrorMessage { get; set; }
     public string? RedirectUrl { get; set; }
-    public string? NotificationEmails { get; set; } // Comma separated
-    public bool SendConfirmationEmail { get; set; } = false.
+    public string? NotificationEmails { get; set; }
+    public bool SendConfirmationEmail { get; set; } = false;
     public string? ConfirmationEmailSubject { get; set; }
     public string? ConfirmationEmailTemplate { get; set; }
-    public bool StoreInDatabase { get; set; } = true.
-    public bool ExportToExcel { get; set; } = true.
+    public bool StoreInDatabase { get; set; } = true;
+    public bool ExportToExcel { get; set; } = true;
     
-    // Navigation
     public Page? Page { get; set; }
     public ICollection<FormTranslation> Translations { get; set; } = new List<FormTranslation>();
     public ICollection<FormField> Fields { get; set; } = new List<FormField>();
@@ -33,13 +32,12 @@ public class FormTranslation : BaseEntity
 {
     public int FormId { get; set; }
     public int LanguageId { get; set; }
-    public string Name { get; set; } = string.Empty.
+    public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
     public string? SubmitButtonText { get; set; }
     public string? SuccessMessage { get; set; }
     public string? ErrorMessage { get; set; }
     
-    // Navigation
     public Form Form { get; set; } = null!;
     public Language Language { get; set; } = null!;
 }
@@ -47,26 +45,25 @@ public class FormTranslation : BaseEntity
 public class FormField : BaseEntity
 {
     public int FormId { get; set; }
-    public string FieldType { get; set; } = string.Empty; // Text, TextArea, Email, Phone, Number, Date, Select, Radio, Checkbox, File, Hidden, Captcha, Html
-    public string Name { get; set; } = string.Empty.
+    public string FieldType { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
     public string? Label { get; set; }
     public string? Placeholder { get; set; }
     public string? HelpText { get; set; }
-    public bool IsRequired { get; set; } = false.
+    public bool IsRequired { get; set; } = false;
     public int DisplayOrder { get; set; }
     public string? ValidationRegex { get; set; }
     public string? ValidationMessage { get; set; }
     public string? DefaultValue { get; set; }
-    public string? Options { get; set; } // JSON for Select, Radio, Checkbox options
+    public string? Options { get; set; }
     public string? CssClass { get; set; }
-    public string? Attributes { get; set; } // Additional HTML attributes as JSON
+    public string? Attributes { get; set; }
     public long? MaxFileSizeBytes { get; set; }
-    public string? AllowedFileTypes { get; set; } // Comma separated MIME types
-    public int? MaxFiles { get; set; } = 1.
-    public bool IsVisible { get; set; } = true.
-    public string? ConditionalLogic { get; set; } // JSON for show/hide based on other fields
+    public string? AllowedFileTypes { get; set; }
+    public int? MaxFiles { get; set; } = 1;
+    public bool IsVisible { get; set; } = true;
+    public string? ConditionalLogic { get; set; }
     
-    // Navigation
     public Form Form { get; set; } = null!;
     public ICollection<FormFieldTranslation> Translations { get; set; } = new List<FormFieldTranslation>();
     public ICollection<FormFieldValue> Values { get; set; } = new List<FormFieldValue>();
@@ -80,9 +77,8 @@ public class FormFieldTranslation : BaseEntity
     public string? Placeholder { get; set; }
     public string? HelpText { get; set; }
     public string? ValidationMessage { get; set; }
-    public string? Options { get; set; } // Translated options
+    public string? Options { get; set; }
     
-    // Navigation
     public FormField Field { get; set; } = null!;
     public Language Language { get; set; } = null!;
 }
@@ -94,12 +90,11 @@ public class FormSubmission : BaseEntity
     public string? UserAgent { get; set; }
     public string? ReferrerUrl { get; set; }
     public int LanguageId { get; set; }
-    public string Status { get; set; } = "New"; // New, InProgress, Completed, Spam, Archived
+    public string Status { get; set; } = "New";
     public string? Notes { get; set; }
     public DateTime? ProcessedAt { get; set; }
     public string? ProcessedBy { get; set; }
     
-    // Navigation
     public Form Form { get; set; } = null!;
     public Language Language { get; set; } = null!;
     public ICollection<FormFieldValue> FieldValues { get; set; } = new List<FormFieldValue>();
@@ -110,9 +105,8 @@ public class FormFieldValue : BaseEntity
 {
     public int SubmissionId { get; set; }
     public int FieldId { get; set; }
-    public string? Value { get; set; } // JSON for complex values
+    public string? Value { get; set; }
     
-    // Navigation
     public FormSubmission Submission { get; set; } = null!;
     public FormField Field { get; set; } = null!;
 }
@@ -121,13 +115,12 @@ public class FormSubmissionFile : BaseEntity
 {
     public int SubmissionId { get; set; }
     public int FieldId { get; set; }
-    public string FileName { get; set; } = string.Empty.
-    public string OriginalFileName { get; set; } = string.Empty.
-    public string FilePath { get; set; } = string.Empty.
-    public string ContentType { get; set; } = string.Empty.
+    public string FileName { get; set; } = string.Empty;
+    public string OriginalFileName { get; set; } = string.Empty;
+    public string FilePath { get; set; } = string.Empty;
+    public string ContentType { get; set; } = string.Empty;
     public long FileSize { get; set; }
     
-    // Navigation
     public FormSubmission Submission { get; set; } = null!;
     public FormField Field { get; set; } = null!;
 }
