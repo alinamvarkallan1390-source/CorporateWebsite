@@ -4,7 +4,6 @@ using CorporateWebsite.Core.Entities;
 using CorporateWebsite.Core.Interfaces;
 using CorporateWebsite.Application.Interfaces;
 using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 
 namespace CorporateWebsite.Application.Services;
 

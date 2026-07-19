@@ -1,10 +1,6 @@
 using CorporateWebsite.Application.Interfaces;
 using CorporateWebsite.Application.Services;
 using CorporateWebsite.Core.Interfaces;
-using CorporateWebsite.Infrastructure.Data;
-using CorporateWebsite.Infrastructure.Repositories;
-using CorporateWebsite.Infrastructure.Services;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using AutoMapper;
