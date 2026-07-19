@@ -12,10 +12,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
-        // Add AutoMapper
         services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
 
-        // Add Application Services
         services.AddScoped<ILanguageService, LanguageService>();
         services.AddScoped<IPageService, PageService>();
         services.AddScoped<IServiceService, ServiceService>();
@@ -28,16 +26,7 @@ public static class DependencyInjection
         services.AddScoped<IMenuService, MenuService>();
         services.AddScoped<ISettingService, SettingService>();
         services.AddScoped<IFormService, FormService>();
-        services.AddScoped<ISliderService, SliderService>();
-        services.AddScoped<IBannerService, BannerService>();
-        services.AddScoped<IMediaService, MediaService>();
-        services.AddScoped<IRedirectService, RedirectService>();
-        services.AddScoped<ISeoService, SeoService>();
-        services.AddScoped<IActivityLogService, ActivityLogService>();
-        services.AddScoped<IBackupService, BackupService>();
-        services.AddScoped<IEmailService, EmailService>();
-        services.AddScoped<IScheduledTaskService, ScheduledTaskService>();
-        services.AddScoped<ISearchService, SearchService>();
+        // Removed services that don't exist yet: SliderService, BannerService, MediaService, RedirectService, SeoService, ActivityLogService, BackupService, EmailService, ScheduledTaskService, SearchService
 
         return services;
     }

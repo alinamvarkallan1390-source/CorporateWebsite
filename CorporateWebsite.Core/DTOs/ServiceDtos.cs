@@ -24,17 +24,10 @@ public class ServiceDto
     public string? CreatedBy { get; set; }
     public string? UpdatedBy { get; set; }
     
-    // Translations
     public ServiceTranslationDto? Translation { get; set; }
     public ICollection<ServiceTranslationDto> Translations { get; set; } = new List<ServiceTranslationDto>();
-    
-    // Features
     public ICollection<ServiceFeatureDto> Features { get; set; } = new List<ServiceFeatureDto>();
-    
-    // FAQs
     public ICollection<ServiceFaqDto> Faqs { get; set; } = new List<ServiceFaqDto>();
-    
-    // Images
     public ICollection<ServiceImageDto> Images { get; set; } = new List<ServiceImageDto>();
 }
 
@@ -54,6 +47,7 @@ public class ServiceTranslationDto
     public string? OgDescription { get; set; }
     public string? OgImage { get; set; }
     public string? SchemaJson { get; set; }
+    public string Slug { get; set; } = string.Empty;
 }
 
 public class ServiceFeatureDto
@@ -139,6 +133,7 @@ public class CreateServiceTranslationDto
     public string? OgDescription { get; set; }
     public string? OgImage { get; set; }
     public string? SchemaJson { get; set; }
+    public string Slug { get; set; } = string.Empty;
 }
 
 public class CreateServiceFeatureDto
@@ -211,6 +206,7 @@ public class UpdateServiceTranslationDto
     public string? OgDescription { get; set; }
     public string? OgImage { get; set; }
     public string? SchemaJson { get; set; }
+    public string Slug { get; set; } = string.Empty;
 }
 
 public class UpdateServiceFeatureDto
@@ -279,11 +275,8 @@ public class ServiceCategoryDto
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     
-    // Translations
     public ServiceCategoryTranslationDto? Translation { get; set; }
     public ICollection<ServiceCategoryTranslationDto> Translations { get; set; } = new List<ServiceCategoryTranslationDto>();
-    
-    // Children
     public ICollection<ServiceCategoryDto> Children { get; set; } = new List<ServiceCategoryDto>();
 }
 
@@ -297,6 +290,7 @@ public class ServiceCategoryTranslationDto
     public string? Description { get; set; }
     public string? MetaTitle { get; set; }
     public string? MetaDescription { get; set; }
+    public string Slug { get; set; } = string.Empty;
 }
 
 public class CreateServiceCategoryDto
@@ -317,6 +311,7 @@ public class CreateServiceCategoryTranslationDto
     public string? Description { get; set; }
     public string? MetaTitle { get; set; }
     public string? MetaDescription { get; set; }
+    public string Slug { get; set; } = string.Empty;
 }
 
 public class UpdateServiceCategoryDto
@@ -338,4 +333,5 @@ public class UpdateServiceCategoryTranslationDto
     public string? Description { get; set; }
     public string? MetaTitle { get; set; }
     public string? MetaDescription { get; set; }
+    public string Slug { get; set; } = string.Empty;
 }

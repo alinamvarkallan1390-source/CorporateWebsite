@@ -21,11 +21,8 @@ public class PageDto
     public string? CreatedBy { get; set; }
     public string? UpdatedBy { get; set; }
     
-    // Translations
     public PageTranslationDto? Translation { get; set; }
     public ICollection<PageTranslationDto> Translations { get; set; } = new List<PageTranslationDto>();
-    
-    // Children
     public ICollection<PageDto> Children { get; set; } = new List<PageDto>();
 }
 
@@ -49,6 +46,7 @@ public class PageTranslationDto
     public string? TwitterDescription { get; set; }
     public string? TwitterImage { get; set; }
     public string? SchemaJson { get; set; }
+    public string Slug { get; set; } = string.Empty;
 }
 
 public class CreatePageDto
@@ -85,6 +83,7 @@ public class CreatePageTranslationDto
     public string? TwitterDescription { get; set; }
     public string? TwitterImage { get; set; }
     public string? SchemaJson { get; set; }
+    public string Slug { get; set; } = string.Empty;
 }
 
 public class UpdatePageDto
@@ -122,6 +121,7 @@ public class UpdatePageTranslationDto
     public string? TwitterDescription { get; set; }
     public string? TwitterImage { get; set; }
     public string? SchemaJson { get; set; }
+    public string Slug { get; set; } = string.Empty;
 }
 
 public class PageFilterDto
